@@ -1,0 +1,96 @@
+//ERROR  
+//ABCDEF BCEADF
+
+//RIGHT
+//ABDEFCGH DBFEAGHC
+//EXP:DFEBHGCA  ABCDEGFH
+
+#include <bits/stdc++.h>
+using namespace std;
+//二叉树的二叉链表存储表示
+struct BiTNode 
+{
+   char data;                      //结点数据域
+   BiTNode *lchild, *rchild;    //左右孩子指针
+} ;
+
+//根据先序和中序建树t
+void BuildTree(BiTNode*& t, char pre[], int pre_low, char in[], int in_low, int len)
+{
+    t = new BiTNode;
+	if (t)
+	{
+		if (len <= 0) 
+		{
+			t = NULL;
+			return;
+		}
+		t->data = pre[pre_low];
+		int i = 0;
+		while (in[in_low + i] != t->data)
+		i++;
+	    if(i>strlen(in)) throw"error";
+		BuildTree(t->lchild, pre, pre_low + 1, in, in_low, i);
+		BuildTree(t->rchild, pre, pre_low + i + 1, in, in_low + i + 1, len - (i + 1));
+	}
+	return;
+}
+// 后序遍历的递归算法
+void PostOrderTraverse(BiTNode* t)
+{
+   if (t) 
+   {
+        PostOrderTraverse(t->lchild);//遍历左孩子
+        PostOrderTraverse(t->rchild);//遍历右孩子
+        cout<<t->data;
+    }
+}
+
+//  层序遍历的队列方法
+void LevelOrder (BiTNode* t,int len)
+{
+	BiTNode *queue[len];
+	int f=0,r=0;
+	if(t) queue[++r]=t;
+	while(f!=r)
+	{
+		BiTNode *p=queue[++f];
+		cout<<p->data;
+		if(p->lchild!=NULL)queue[++r]=p->lchild;
+		if(p->rchild!=NULL)queue[++r]=p->rchild; 
+	} 
+} 
+void DestroyBitree(BiTNode* & t)
+{
+   if(t)
+	{
+		DestroyBitree(t->lchild);
+		DestroyBitree(t->rchild);
+		free(t);
+	}
+}
+
+int main()
+{
+   char pre[30], in[30];
+   BiTNode *t = NULL;
+   cin>>pre;
+   cin>>in;
+   if(strlen(pre)==strlen(in))
+   {   
+       try
+       {
+       BuildTree(t, pre, 0, in, 0, strlen(in));
+	   PostOrderTraverse(t);
+	   cout<<endl;
+	   LevelOrder(t,strlen(in));
+	   DestroyBitree(t);
+       }catch(const char *e)
+	   {
+	   	   cout<<e;
+	   } 
+   }
+   else
+   cout<<"error";
+   
+}
